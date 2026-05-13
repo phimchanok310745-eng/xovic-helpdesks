@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import uvicorn
+import httpx
 
 logger = logging.getLogger(__name__)
 
@@ -148,13 +149,41 @@ def create_app(sheets_handler, gemini_handler) -> FastAPI:
 
     @app.post("/api/tickets")
     async def create_ticket(body: TicketCreate):
-        """สร้าง Ticket ใหม่จากหน้า report.html"""
+        """สร้าง Ticket ใหม่จากหน้า report.html พร้อมแจ้งเตือน Telegram"""
         try:
             ticket_id = sheets_handler.add_ticket(
                 user_id=body.email,
                 username=body.name,
                 message=body.message,
             )
+
+            # ── แจ้งเตือน Telegram ──
+            bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+            chat_id   = os.getenv("TELEGRAM_TEAM_CHAT_ID")
+            if bot_token and chat_id:
+                try:
+                    text = (
+                        "🔔 *มี Ticket ใหม่จากเว็บไซต์*\n"
+                        f"🎫 Ticket: *{ticket_id}*\n"
+                        f"👤 ผู้แจ้ง: {body.name}\n"
+                        f"📧 อีเมล: {body.email}\n"
+                        f"📝 รายละเอียด: {body.message}\n"
+                        f"⏰ เวลา: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+                    )
+                    async with httpx.AsyncClient() as client:
+                        await client.post(
+                            f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                            json={
+                                "chat_id": chat_id,
+                                "text": text,
+                                "parse_mode": "Markdown"
+                            },
+                            timeout=10
+                        )
+                    logger.info(f"Telegram notification sent for {ticket_id}")
+                except Exception as te:
+                    logger.warning(f"Telegram notification failed: {te}")
+
             return {"ticket_id": ticket_id, "status": "open"}
         except Exception as e:
             logger.error(f"create_ticket error: {e}")
