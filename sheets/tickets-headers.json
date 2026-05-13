@@ -1,0 +1,13 @@
+﻿[
+    "ticket_id",
+    "customer_id",
+    "customer_name",
+    "issue_details",
+    "status",
+    "priority",
+    "created_at",
+    "updated_at",
+    "reply_chat_id",
+    "last_message",
+    "assigned_to"
+]

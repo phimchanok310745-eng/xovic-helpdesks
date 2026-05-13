@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}XOVIC Helpdesk{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .navbar-brand { font-weight: bold; }
+        .footer { margin-top: 3rem; padding: 1rem 0; text-align: center; color: #6c757d; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">🏢 XOVIC Helpdesk</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/report">📝 แจ้งปัญหา</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/status">🔍 ตรวจสอบสถานะ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/cancel">❌ ยกเลิก Ticket</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my-tickets">📋 Ticket ของฉัน</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/chat">💬 แชทกับ AI</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <div class="footer">
+        <div class="container">© 2025 XOVIC Helpdesk | ติดต่อทีมงาน: support@xovic.com</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

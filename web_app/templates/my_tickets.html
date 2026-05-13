@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket ของฉัน</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>📋 Ticket ของฉัน</h2>
+        <div class="input-group mb-3">
+            <input type="email" class="form-control" id="email" placeholder="กรอกอีเมลของคุณ">
+            <button class="btn btn-primary" id="searchBtn">ค้นหา</button>
+        </div>
+        <div id="result"></div>
+    </div>
+    <script>
+        document.getElementById('searchBtn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value.trim();
+            const resultDiv = document.getElementById('result');
+            if (!email) { resultDiv.innerHTML = '<div class="alert alert-warning">กรุณากรอกอีเมล</div>'; return; }
+            resultDiv.innerHTML = '<div class="alert alert-info">กำลังค้นหา...</div>';
+            try {
+                const res = await fetch(`/api/tickets?email=${encodeURIComponent(email)}`);
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'เชื่อมต่อไม่ได้');
+                if (data.tickets.length > 0) {
+                    let html = '<div class="list-group">';
+                    for (const t of data.tickets) {
+                        let statusBadge = '';
+                        switch(t.status) {
+                            case 'open': statusBadge = '🟢 เปิด'; break;
+                            case 'in_progress': statusBadge = '🟡 กำลังดำเนินการ'; break;
+                            case 'resolved': statusBadge = '🔵 แก้ไขเสร็จ'; break;
+                            case 'closed': statusBadge = '⚫ ปิด'; break;
+                            case 'cancelled': statusBadge = '🔴 ยกเลิก'; break;
+                            default: statusBadge = t.status;
+                        }
+                        html += `<div class="list-group-item"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">Ticket: ${t.ticket_id}</h5><small>${statusBadge}</small></div><p class="mb-1">📝 ${t.issue_details}</p><small>📅 ${t.created_at} | 👨‍💻 ${t.assigned_to || 'ยังไม่มีผู้รับผิดชอบ'}</small></div>`;
+                    }
+                    html += '</div>';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = '<div class="alert alert-secondary">ไม่พบ Ticket สำหรับอีเมลนี้</div>';
+                }
+            } catch (err) {
+                console.error(err);
+                resultDiv.innerHTML = '<div class="alert alert-danger">ไม่สามารถเชื่อมต่อระบบได้ กรุณาลองอีกครั้ง</div>';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Admin Dashboard - XOVIC Helpdesk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        .card-stats {
+            border-radius: 1rem;
+            border: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .card-stats:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+
+        .status-open {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-in_progress {
+            background: #fed7aa;
+            color: #9b3412;
+        }
+
+        .status-resolved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-closed {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-sm {
+            border-radius: 30px;
+            padding: 5px 15px;
+            font-weight: 500;
+        }
+
+        .table-responsive {
+            background: white;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        a.text-decoration-none {
+            color: inherit;
+        }
+    </style>
+</head>
+
+<body>
+
+    <input type="hidden" id="initFilter" value="{{ init_filter }}">
+    <input type="hidden" id="initDate" value="{{ init_date }}">
+
+    <nav class="navbar navbar-dark bg-dark py-3 shadow-lg">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="/admin"><i class="fas fa-user-shield me-2"></i> XOVIC Admin</a>
+            <div>
+                <a href="/" class="btn btn-outline-light btn-sm me-2"><i class="fas fa-home me-1"></i>หน้าผู้ใช้</a>
+                <a href="/admin/logout" class="btn btn-danger btn-sm"><i
+                        class="fas fa-sign-out-alt me-1"></i>ออกจากระบบ</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <a href="/admin?filter=all" class="text-decoration-none">
+                    <div class="card card-stats bg-primary text-white p-3">
+                        <h5><i class="fas fa-ticket-alt me-2"></i> ทั้งหมด</h5>
+                        <h2 id="totalCount">-</h2>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="/admin/not-completed" class="text-decoration-none">
+                    <div class="card card-stats bg-info text-white p-3">
+                        <h5><i class="fas fa-spinner me-2"></i> ยังไม่เสร็จสมบูรณ์</h5>
+                        <h2 id="openProgressCount">-</h2>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="/admin/completed" class="text-decoration-none">
+                    <div class="card card-stats bg-success text-white p-3">
+                        <h5><i class="fas fa-check-circle me-2"></i> ปิดงานแล้ว (เสร็จสมบูรณ์)</h5>
+                        <h2 id="resolvedClosedCount">-</h2>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="/admin?date=today" class="text-decoration-none">
+                    <div class="card card-stats bg-secondary text-white p-3">
+                        <h5><i class="fas fa-chart-line me-2"></i> วันนี้</h5>
+                        <h2 id="todayCount">-</h2>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="alert alert-light d-flex justify-content-between align-items-center mb-3" id="filterBadge">
+            <span><i class="fas fa-filter me-2"></i> <span id="filterText">แสดงทั้งหมด</span></span>
+            <button class="btn btn-sm btn-outline-secondary" onclick="clearFilter()">ล้างตัวกรอง</button>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+            <h2><i class="fas fa-ticket-alt me-2"></i> จัดการ Ticket</h2>
+            <div>
+                <div class="btn-group me-2">
+                    <button class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-download me-1"></i> Export CSV
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="exportCSV('all', 'csv')">ทั้งหมด (CSV)</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportCSV('all', 'txt')">ทั้งหมด (Text)</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#" onclick="exportCSV('today', 'csv')">วันนี้ (CSV)</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportCSV('today', 'txt')">วันนี้ (Text)</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportCSV('this_month', 'csv')">เดือนนี้
+                                (CSV)</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportCSV('this_month', 'txt')">เดือนนี้
+                                (Text)</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportCSV('this_year', 'csv')">ปีนี้ (CSV)</a>
+                        </li>
+                        <li><a class="dropdown-item" href="#" onclick="exportCSV('this_year', 'txt')">ปีนี้ (Text)</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                data-bs-target="#customDateModal">กำหนดช่วงเวลา...</a></li>
+                    </ul>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="refreshBtn"><i class="fas fa-sync-alt me-1"></i>
+                    รีเฟรช</button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ticket ID</th>
+                        <th>ลูกค้า</th>
+                        <th>ปัญหา</th>
+                        <th>สถานะ</th>
+                        <th>ผู้รับผิดชอบ</th>
+                        <th>ข้อความล่าสุด</th>
+                        <th>สร้างเมื่อ</th>
+                        <th>จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="ticketsBody">
+                    <tr>
+                        <td colspan="8" class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> กำลังโหลด...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal เลือกช่วงเวลา -->
+    <div class="modal fade" id="customDateModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">เลือกช่วงเวลาที่ต้องการ Export</h5><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>เริ่มต้น (YYYY-MM-DD)</label><input type="date" id="exportStartDate"
+                        class="form-control mb-3">
+                    <label>สิ้นสุด (YYYY-MM-DD)</label><input type="date" id="exportEndDate" class="form-control">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button class="btn btn-primary" onclick="exportCSV('custom', 'csv')">ดาวน์โหลด CSV</button>
+                    <button class="btn btn-primary" onclick="exportCSV('custom', 'txt')">ดาวน์โหลด Text</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal เปลี่ยนสถานะ -->
+    <div class="modal fade" id="statusModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">เปลี่ยนสถานะ Ticket</h5><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="modalTicketId">
+                    <label>สถานะใหม่</label>
+                    <select id="modalStatus" class="form-select">
+                        <option value="open">🟢 เปิดเรื่อง</option>
+                        <option value="in_progress">🟡 กำลังดำเนินการ</option>
+                        <option value="resolved">🔵 แก้ไขเสร็จสิ้น</option>
+                        <option value="closed">⚫ ปิดงาน</option>
+                        <option value="cancelled">🔴 ยกเลิก</option>
+                    </select>
+                    <label class="mt-2">หมายเหตุ</label>
+                    <textarea id="modalNote" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="modal-footer"><button class="btn btn-secondary"
+                        data-bs-dismiss="modal">ยกเลิก</button><button class="btn btn-primary"
+                        id="saveStatusBtn">บันทึก</button></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentFilterStatus = null;
+        let currentFilterDate = null;
+        let currentTicketId = null;
+
+        // อ่านค่าจาก hidden input ที่ backend ฝังไว้
+        const initFilterElem = document.getElementById('initFilter');
+        const initDateElem = document.getElementById('initDate');
+        if (initFilterElem) currentFilterStatus = initFilterElem.value;
+        if (initDateElem) currentFilterDate = initDateElem.value;
+
+        function getTodayDate() { return new Date().toISOString().slice(0, 10); }
+
+        function updateFilterBadge() {
+            const span = document.getElementById('filterText');
+            if (!currentFilterStatus && !currentFilterDate) span.innerText = 'แสดงทั้งหมด';
+            else if (currentFilterStatus === 'closed') span.innerText = 'แสดงเฉพาะ Ticket ที่ปิดงานแล้ว (เสร็จสมบูรณ์)';
+            else if (currentFilterStatus === 'open,in_progress,resolved') span.innerText = 'แสดงเฉพาะ Ticket ที่ยังไม่เสร็จสมบูรณ์';
+            else if (currentFilterDate) span.innerText = `แสดงเฉพาะ Ticket ของวันที่ ${currentFilterDate}`;
+            else span.innerText = 'แสดงตามเงื่อนไข';
+        }
+
+        function clearFilter() { window.location.href = '/admin'; }
+
+        async function loadTickets() {
+            const tbody = document.getElementById('ticketsBody');
+            try {
+                let url = '/admin/api/tickets?';
+                if (currentFilterStatus) url += `status=${encodeURIComponent(currentFilterStatus)}&`;
+                if (currentFilterDate) url += `date=${currentFilterDate}&`;
+                const res = await fetch(url, { credentials: 'same-origin' });
+                if (res.status === 401) { window.location.href = '/admin/login'; return; }
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                const tickets = data.tickets || [];
+                if (tickets.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">ไม่มี Ticket ตามเงื่อนไขที่เลือก<\/td><\/tr>';
+                    return;
+                }
+                tbody.innerHTML = '';
+                tickets.forEach(t => {
+                    const statusClass = `status-${t.status || 'open'}`;
+                    const statusMap = { 'open': '🟢 เปิดเรื่อง', 'in_progress': '🟡 กำลังดำเนินการ', 'resolved': '🔵 แก้ไขเสร็จสิ้น', 'closed': '⚫ ปิดงาน', 'cancelled': '🔴 ยกเลิก' };
+                    const statusText = statusMap[t.status] || t.status;
+                    const issueRaw = t.issue_details ? String(t.issue_details) : '';
+                    const issueDisplay = issueRaw.substring(0, 70) + (issueRaw.length > 70 ? '...' : '');
+
+                    // รองรับหลายชื่อฟิลด์สำหรับข้อความล่าสุด
+                    let lastMsg = '-';
+                    if (t.last_message) lastMsg = String(t.last_message).substring(0, 50);
+                    else if (t.หมายเหตุ) lastMsg = String(t.หมายเหตุ).substring(0, 50);
+                    else if (t.notes) lastMsg = String(t.notes).substring(0, 50);
+
+                    const row = `
+                    <tr>
+                        <td><strong>${escapeHtml(t.ticket_id)}</strong></td>
+                        <td>${escapeHtml(t.customer_name)}</td>
+                        <td>${escapeHtml(issueDisplay)}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>${escapeHtml(t.assigned_to)}</td>
+                        <td>${escapeHtml(lastMsg)}</td>
+                        <td>${escapeHtml(t.created_at)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="openStatusModal('${escapeHtml(t.ticket_id)}')"><i class="fas fa-edit"></i> สถานะ</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="assignTicket('${escapeHtml(t.ticket_id)}')"><i class="fas fa-user-check"></i> รับเรื่อง</button>
+                         </td>
+                     </tr>
+                `;
+                    tbody.insertAdjacentHTML('beforeend', row);
+                });
+                await updateStats();
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-3">เกิดข้อผิดพลาด: ${err.message}<\/td><\/tr>`;
+            }
+        }
+
+        async function updateStats() {
+            try {
+                const res = await fetch('/admin/api/tickets', { credentials: 'same-origin' });
+                const data = await res.json();
+                const all = data.tickets || [];
+                const total = all.length;
+                const notCompleted = all.filter(t => t.status !== 'closed').length;
+                const completed = all.filter(t => t.status === 'closed').length;
+                const todayCount = all.filter(t => (t.created_at || '').startsWith(getTodayDate())).length;
+                document.getElementById('totalCount').innerText = total;
+                document.getElementById('openProgressCount').innerText = notCompleted;
+                document.getElementById('resolvedClosedCount').innerText = completed;
+                document.getElementById('todayCount').innerText = todayCount;
+            } catch (e) { console.warn(e); }
+        }
+
+        function exportCSV(period, format) {
+            let url = `/admin/api/tickets/export?period=${period}&format=${format}`;
+            if (currentFilterStatus) url += `&status=${encodeURIComponent(currentFilterStatus)}`;
+            if (currentFilterDate) url += `&date=${currentFilterDate}`;
+            if (period === 'custom') {
+                const start = document.getElementById('exportStartDate').value;
+                const end = document.getElementById('exportEndDate').value;
+                if (!start || !end) { alert('กรุณาเลือกวันที่เริ่มต้นและสิ้นสุด'); return; }
+                url += `&start_date=${start}&end_date=${end}`;
+                bootstrap.Modal.getInstance(document.getElementById('customDateModal')).hide();
+            }
+            window.location.href = url;
+        }
+
+        function openStatusModal(ticketId) {
+            currentTicketId = ticketId;
+            document.getElementById('modalTicketId').value = ticketId;
+            new bootstrap.Modal(document.getElementById('statusModal')).show();
+        }
+
+        async function assignTicket(ticketId) {
+            const assignee = prompt('กรอกชื่อผู้รับผิดชอบ (หรือใช้ชื่อของคุณ):', 'Admin');
+            if (!assignee) return;
+            try {
+                const res = await fetch(`/admin/api/tickets/${encodeURIComponent(ticketId)}/assign`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                    body: JSON.stringify({ assignee })
+                });
+                if (res.ok) {
+                    alert(`✅ Ticket ${ticketId} ถูกมอบหมายให้ ${assignee}`);
+                    await loadTickets();
+                } else {
+                    alert('❌ ไม่สามารถมอบหมายได้');
+                }
+            } catch (err) { alert('❌ เกิดข้อผิดพลาด'); }
+        }
+
+        function refreshTickets() { loadTickets(); }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+        }
+
+        // บันทึกการเปลี่ยนสถานะ
+        document.getElementById('saveStatusBtn').onclick = async () => {
+            const status = document.getElementById('modalStatus').value;
+            const note = document.getElementById('modalNote').value;
+            try {
+                const res = await fetch(`/admin/api/tickets/${encodeURIComponent(currentTicketId)}/status`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                    body: JSON.stringify({ status, note })
+                });
+                if (res.ok) {
+                    alert('✅ อัปเดตสถานะสำเร็จ');
+                    bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
+                    document.getElementById('modalNote').value = '';
+                    loadTickets();
+                } else { alert('❌ เกิดข้อผิดพลาด'); }
+            } catch (e) { alert('❌ ไม่สามารถเชื่อมต่อ'); }
+        };
+
+        // รีเฟรชด้วยปุ่ม (และป้องกัน reload ทั้งหน้า)
+        const refreshBtn = document.getElementById('refreshBtn');
+        if (refreshBtn) refreshBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            refreshTickets();
+        });
+
+        // ป้องกัน F5/Ctrl+R reload ทั้งหน้า ให้โหลด ticket ใหม่แทน
+        window.addEventListener('keydown', function (e) {
+            if ((e.key === 'F5') || (e.ctrlKey && e.key.toLowerCase() === 'r')) {
+                e.preventDefault();
+                refreshTickets();
+            }
+        });
+
+        updateFilterBadge();
+        loadTickets();
+    </script>
+</body>
+
+</html>

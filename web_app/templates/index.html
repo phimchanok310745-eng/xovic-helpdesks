@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>XOVIC | ศูนย์ช่วยเหลืออัจฉริยะ</title>
+    <!-- Bootstrap 5 + Icons + Google Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e9eef5 100%);
+            min-height: 100vh;
+        }
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.6rem;
+            letter-spacing: -0.5px;
+        }
+        .navbar-brand i {
+            font-size: 1.9rem;
+            background: linear-gradient(45deg, #FFD166, #FF9F1C);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-right: 10px;
+        }
+        .nav-link {
+            font-weight: 500;
+            margin: 0 5px;
+            transition: all 0.2s ease;
+            border-radius: 30px;
+            padding: 8px 18px !important;
+        }
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+        }
+        .hero-section {
+            background: linear-gradient(105deg, #1E2A5E 0%, #2A3B7A 100%);
+            border-radius: 2rem;
+            padding: 3rem 2rem;
+            margin: 2rem 0 2rem 0;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: "✨";
+            font-size: 180px;
+            position: absolute;
+            right: -30px;
+            bottom: -60px;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+        .hero-title {
+            font-weight: 800;
+            background: linear-gradient(120deg, #FFFFFF, #FFE6C7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 2.8rem;
+        }
+        .hero-sub {
+            color: rgba(255,255,255,0.85);
+            font-size: 1.2rem;
+        }
+        .hero-logo {
+            height: 150px;
+            width: auto;
+            background: rgba(0,0,0,0.2);
+            padding: 12px 20px;
+            border-radius: 32px;
+            transition: transform 0.2s;
+        }
+        .hero-logo:hover {
+            transform: scale(1.03);
+        }
+        @media (max-width: 768px) {
+            .hero-logo {
+                height: 80px;
+                padding: 8px 14px;
+            }
+            .hero-title {
+                font-size: 1.9rem;
+            }
+            .hero-section {
+                padding: 2rem 1rem;
+            }
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+        }
+        .service-card {
+            border: none;
+            border-radius: 1.5rem;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(2px);
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+            height: 100%;
+        }
+        .service-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            background: white;
+        }
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        .btn-custom {
+            border-radius: 50px;
+            padding: 8px 28px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-custom:hover {
+            transform: scale(1.02);
+            filter: brightness(0.96);
+        }
+        .footer {
+            background: #111827;
+            color: #9ca3af;
+            border-radius: 1.5rem 1.5rem 0 0;
+            margin-top: 4rem;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        .footer a {
+            color: #cbd5e1;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: white;
+        }
+        .badge-new {
+            background-color: #ff8c42;
+            color: white;
+            font-size: 0.7rem;
+            border-radius: 30px;
+            padding: 0.2rem 0.7rem;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 shadow-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-crown"></i> 
+                <span class="fw-bold">Xovic Company Limited</span>
+                <span class="badge-new">AI ready</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/report"><i class="fas fa-pen-alt me-1"></i> แจ้งปัญหา</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/status"><i class="fas fa-chart-line me-1"></i> ตรวจสอบสถานะ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/cancel"><i class="fas fa-ban me-1"></i> ยกเลิก Ticket</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my-tickets"><i class="fas fa-ticket-alt me-1"></i> Ticket ของฉัน</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/chat"><i class="fas fa-robot me-1"></i> แชทกับ AI</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero-section">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center mb-4 flex-wrap">
+                        <img class="hero-logo" 
+                             src="https://static.wixstatic.com/media/339a7f_5ad0853f0b5d44ae8807f63503918a20~mv2.png/v1/fit/w_2500,h_1330,al_c/339a7f_5ad0853f0b5d44ae8807f63503918a20~mv2.png" 
+                             alt="XOVIC Logo"
+                             onerror="this.onerror=null; this.src='https://placehold.co/300x100?text=XOVIC'">
+                        <span class="ms-3 text-white fw-semibold fs-2">บริษัท โซวิค จำกัด</span>
+                    </div>
+                    <h1 class="hero-title fw-bold">✨ ยินดีต้อนรับสู่ศูนย์ช่วยเหลือ XOVIC</h1>
+                    <p class="hero-sub mt-3">แจ้งปัญหา ตรวจสอบสถานะ หรือสอบถามข้อมูลได้ทันใจ พร้อมทีมงานคุณภาพ</p>
+                </div>
+                <div class="col-md-4 text-center d-none d-md-block">
+                    <i class="fas fa-headset" style="font-size: 5rem; color: rgba(255,255,255,0.3);"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-2">
+            <!-- Card แจ้งปัญหา -->
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card p-4">
+                    <div class="card-icon text-primary"><i class="fas fa-edit"></i></div>
+                    <h4 class="fw-bold">📝 แจ้งปัญหา</h4>
+                    <p class="text-secondary">แจ้งปัญหาให้ทีมงานทราบ พร้อมรับหมายเลข Ticket ทันที</p>
+                    <a href="/report" class="btn btn-primary btn-custom mt-2">แจ้งเลย <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+            <!-- Card ตรวจสอบสถานะ (มีไอคอนชัดเจน) -->
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card p-4">
+                    <div class="card-icon text-success"><i class="fas fa-chart-line"></i></div>   <!-- เปลี่ยนเป็น fa-chart-line ให้เห็นชัด -->
+                    <h4 class="fw-bold">🔍 ตรวจสอบสถานะ</h4>
+                    <p class="text-secondary">ติดตามความคืบหน้าของ Ticket แบบ realtime</p>
+                    <a href="/status" class="btn btn-secondary btn-custom mt-2">ตรวจสอบ <i class="fas fa-search ms-1"></i></a>
+                </div>
+            </div>
+            <!-- Card ยกเลิก Ticket -->
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card p-4">
+                    <div class="card-icon text-warning"><i class="fas fa-trash-alt"></i></div>
+                    <h4 class="fw-bold">❌ ยกเลิก Ticket</h4>
+                    <p class="text-secondary">ยกเลิก Ticket ที่แจ้งไว้ (ต้องยืนยันอีเมล)</p>
+                    <a href="/cancel" class="btn btn-warning btn-custom mt-2">ยกเลิก <i class="fas fa-check-circle ms-1"></i></a>
+                </div>
+            </div>
+            <!-- Card แชทกับ AI -->
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card p-4">
+                    <div class="card-icon text-info"><i class="fas fa-comment-dots"></i></div>
+                    <h4 class="fw-bold">💬 แชทกับ AI</h4>
+                    <p class="text-secondary">สอบถามข้อมูลเบื้องต้น หรือขอคำแนะนำจากผู้ช่วยอัจฉริยะ</p>
+                    <a href="/chat" class="btn btn-info btn-custom mt-2 text-white">เริ่มแชท <i class="fas fa-comment ms-1"></i></a>
+                </div>
+            </div>
+            <!-- Card Ticket ของฉัน -->
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card p-4">
+                    <div class="card-icon text-dark"><i class="fas fa-folder-open"></i></div>
+                    <h4 class="fw-bold">📋 Ticket ของฉัน</h4>
+                    <p class="text-secondary">ดูประวัติ Ticket ทั้งหมดของคุณ กรอกอีเมล</p>
+                    <a href="/my-tickets" class="btn btn-dark btn-custom mt-2">ตรวจสอบ <i class="fas fa-history ms-1"></i></a>
+                </div>
+            </div>
+            <!-- ติดต่อทีมงาน -->
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card p-4 bg-light border">
+                    <div class="card-icon text-danger"><i class="fas fa-phone-alt"></i></div>
+                    <h4 class="fw-bold">📞 ติดต่อทีมงาน</h4>
+                    <p class="text-secondary">กรณีเร่งด่วน ติดต่อ Support โดยตรง</p>
+                    <a href="tel:021234567" class="btn btn-danger btn-custom mt-2">โทรเลย <i class="fas fa-phone ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5 pt-3">
+            <div class="col text-center">
+                <div class="alert alert-light shadow-sm border-0 rounded-4 p-4" style="background: rgba(255,255,240,0.8);">
+                    <i class="fas fa-clock me-2 text-muted"></i> 
+                    ทีมงานพร้อมให้บริการ 24/7 • ตอบกลับภายใน 2-4 ชั่วโมงทำการ
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-md-start mb-3 mb-md-0">
+                    <i class="fas fa-crown me-1"></i> <strong>Xovic Company Limited</strong> — บริษัท โซวิค จำกัด
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="me-3">นโยบายความเป็นส่วนตัว</a>
+                    <a href="#">ติดต่อเรา</a>
+                    <span class="mx-2">|</span>
+                    <i class="fab fa-line me-1"></i> <i class="fab fa-facebook me-1"></i> <i class="fab fa-twitter"></i>
+                </div>
+            </div>
+            <hr class="bg-secondary my-3" style="opacity:0.3">
+            <div class="small">
+                © 2025 XOVIC CO., LTD. | พัฒนาด้วย ❤️ เพื่อประสบการณ์การบริการที่ดีที่สุด
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
